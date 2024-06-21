@@ -1,15 +1,48 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
+use Database\Factories\DebitCardTransactionFactory;
+use Eloquent;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
 
+/**
+ * App\Models\DebitCardTransaction
+ *
+ * @property int $id
+ * @property int $debit_card_id
+ * @property int $amount
+ * @property string $currency_code
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
+ * @property-read \App\Models\DebitCard|null $debitCard
+ * @method static \Database\Factories\DebitCardTransactionFactory factory(...$parameters)
+ * @method static \Illuminate\Database\Eloquent\Builder|DebitCardTransaction newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|DebitCardTransaction newQuery()
+ * @method static Builder|DebitCardTransaction onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|DebitCardTransaction query()
+ * @method static \Illuminate\Database\Eloquent\Builder|DebitCardTransaction whereAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DebitCardTransaction whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DebitCardTransaction whereCurrencyCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DebitCardTransaction whereDebitCardId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DebitCardTransaction whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DebitCardTransaction whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DebitCardTransaction whereUpdatedAt($value)
+ * @method static Builder|DebitCardTransaction withTrashed()
+ * @method static Builder|DebitCardTransaction withoutTrashed()
+ * @mixin Eloquent
+ */
 class DebitCardTransaction extends Authenticatable
 {
     use HasFactory, SoftDeletes;
@@ -45,12 +78,16 @@ class DebitCardTransaction extends Authenticatable
         'currency_code',
     ];
 
+    protected $casts = [
+        'amount' => 'integer'
+    ];
+
     /**
      * A Debit card transaction belongs to a Debit card
      *
      * @return BelongsTo
      */
-    public function debitCard()
+    public function debitCard(): BelongsTo
     {
         return $this->belongsTo(DebitCard::class, 'debit_card_id');
     }

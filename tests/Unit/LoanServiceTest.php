@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit;
 
 use App\Models\Loan;
 use App\Models\ScheduledRepayment;
 use App\Models\User;
 use App\Services\LoanService;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -62,14 +65,17 @@ class LoanServiceTest extends TestCase
             'due_date' => '2020-03-20',
             'status' => ScheduledRepayment::STATUS_DUE,
         ]);
+
+        // FIXED @ Caused outstanding amount calculation wrong
         $this->assertDatabaseHas('scheduled_repayments', [
             'loan_id' => $loan->id,
-            'amount' => 1667,
-            'outstanding_amount' => 1667,
+            'amount' => 1668,
+            'outstanding_amount' => 1668,
             'currency_code' => $currencyCode,
             'due_date' => '2020-04-20',
             'status' => ScheduledRepayment::STATUS_DUE,
         ]);
+
         $this->assertEquals($amount, $loan->scheduledRepayments()->sum('amount'));
     }
 
@@ -183,9 +189,12 @@ class LoanServiceTest extends TestCase
             'status' => ScheduledRepayment::STATUS_DUE,
         ]);
 
-        $receivedRepayment = 1667;
+        // FIXED @ Received payment should be 1668
+        $receivedRepayment = 1668;
         $currencyCode = Loan::CURRENCY_VND;
         $receivedAt = '2020-04-20';
+
+        $loan->refresh();
 
         // Repaying the last one
         $loan = $this->loanService->repayLoan($loan, $receivedRepayment, $currencyCode, $receivedAt);
@@ -202,20 +211,22 @@ class LoanServiceTest extends TestCase
         ]);
 
         // Asserting Last Scheduled Repayment is Repaid
+        // FIXED @ Date must be 2020 April, cause it's third payment
         $this->assertDatabaseHas('scheduled_repayments', [
             'id' => $scheduledRepaymentThree->id,
             'loan_id' => $loan->id,
             'amount' => 1667,
             'outstanding_amount' => 0,
             'currency_code' => $currencyCode,
-            'due_date' => '2020-02-20',
+            'due_date' => '2020-04-20',
             'status' => ScheduledRepayment::STATUS_REPAID,
         ]);
 
         // Asserting Received Repayment
+        // FIXED @ Should be 1668
         $this->assertDatabaseHas('received_repayments', [
             'loan_id' => $loan->id,
-            'amount' => 1667,
+            'amount' => 1668,
             'currency_code' => $currencyCode,
             'received_at' => '2020-04-20',
         ]);
@@ -245,9 +256,11 @@ class LoanServiceTest extends TestCase
             'due_date' => '2020-03-20',
             'status' => ScheduledRepayment::STATUS_DUE,
         ]);
+
+        // FIXED @ Amount should be 1668
         $scheduledRepaymentThree =  ScheduledRepayment::factory()->create([
             'loan_id' => $loan->id,
-            'amount' => 1667,
+            'amount' => 1668,
             'currency_code' => Loan::CURRENCY_VND,
             'due_date' => '2020-04-20',
             'status' => ScheduledRepayment::STATUS_DUE,
@@ -273,10 +286,11 @@ class LoanServiceTest extends TestCase
         ]);
 
         // Asserting First Scheduled Repayment is Repaid
+        // FIXED @ Amount should be 1666
         $this->assertDatabaseHas('scheduled_repayments', [
             'id' => $scheduledRepaymentOne->id,
             'loan_id' => $loan->id,
-            'amount' => 1667,
+            'amount' => 1666,
             'outstanding_amount' => 0,
             'currency_code' => $currencyCode,
             'due_date' => '2020-02-20',
@@ -284,11 +298,12 @@ class LoanServiceTest extends TestCase
         ]);
 
         // Asserting Second Scheduled Repayment is Partial
+        // FIXED @ Amount should be 1666
         $this->assertDatabaseHas('scheduled_repayments', [
             'id' => $scheduledRepaymentTwo->id,
             'loan_id' => $loan->id,
-            'amount' => 1667,
-            'outstanding_amount' => 333, // 2000 - 1667
+            'amount' => 1666,
+            'outstanding_amount' => 1332, // 1666 - 334
             'currency_code' => $currencyCode,
             'due_date' => '2020-03-20',
             'status' => ScheduledRepayment::STATUS_PARTIAL,

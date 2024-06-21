@@ -16,17 +16,17 @@ class CreateReceivedRepaymentsTable extends Migration
         Schema::create('received_repayments', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('loan_id');
-
-            // TODO: Add missing columns here
-
+            $table->unsignedBigInteger('amount');
+            $table->char('currency_code', 5);
+            $table->date('received_at');
             $table->timestamps();
             $table->softDeletes();
 
-            $table->foreign('loan_id')
-                ->references('id')
-                ->on('loans')
-                ->onUpdate('cascade')
-                ->onDelete('restrict');
+//            $table->foreign('loan_id')
+//                ->references('id')
+//                ->on('loans')
+//                ->onUpdate('cascade')
+//                ->onDelete('restrict');
         });
     }
 

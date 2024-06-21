@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Factories;
 
+use App\Models\Loan;
 use App\Models\ScheduledRepayment;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -22,7 +25,9 @@ class ScheduledRepaymentFactory extends Factory
     public function definition(): array
     {
         return [
-            // TODO: Complete factory
+            'currency_code' => $this->faker->randomElement(Loan::CURRENCIES),
+            'due_date' => now()->addMonth()->toDateString(),
+            'status' => ScheduledRepayment::STATUS_DUE,
         ];
     }
 }

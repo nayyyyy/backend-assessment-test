@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests;
 
 use App\Models\DebitCard;
@@ -14,7 +16,7 @@ class DebitCardDestroyRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->can('delete', $this->route('debitCard'));
+        return $this->user()->can('delete', $this->route('debit_card'));
     }
 
     /**

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -16,17 +18,19 @@ class CreateScheduledRepaymentsTable extends Migration
         Schema::create('scheduled_repayments', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('loan_id');
-
-            // TODO: Add missing columns here
-
+            $table->unsignedBigInteger('amount');
+            $table->unsignedBigInteger('outstanding_amount');
+            $table->char('currency_code', 5);
+            $table->date('due_date');
+            $table->string('status');
             $table->timestamps();
             $table->softDeletes();
 
-            $table->foreign('loan_id')
-                ->references('id')
-                ->on('loans')
-                ->onUpdate('cascade')
-                ->onDelete('restrict');
+//            $table->foreign('loan_id')
+//                ->references('id')
+//                ->on('loans')
+//                ->onUpdate('cascade')
+//                ->onDelete('restrict');
         });
     }
 

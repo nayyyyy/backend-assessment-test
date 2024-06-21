@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Http\Controllers\DebitCardController;
 use App\Http\Controllers\DebitCardTransactionController;
 use Illuminate\Support\Facades\Route;
@@ -18,14 +20,12 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')
     ->group(function () {
         // Debit card endpoints
-        Route::get('debit-cards', [DebitCardController::class, 'index']);
-        Route::post('debit-cards', [DebitCardController::class, 'store']);
-        Route::get('debit-cards/{debitCard}', [DebitCardController::class, 'show']);
-        Route::put('debit-cards/{debitCard}', [DebitCardController::class, 'update']);
-        Route::delete('debit-cards/{debitCard}', [DebitCardController::class, 'destroy']);
+        Route::apiResource('debit-cards', DebitCardController::class);
 
         // Debit card transactions endpoints
-        Route::get('debit-card-transactions', [DebitCardTransactionController::class, 'index']);
-        Route::post('debit-card-transactions', [DebitCardTransactionController::class, 'store']);
-        Route::get('debit-card-transactions/{debitCardTransaction}', [DebitCardTransactionController::class, 'show']);
+        Route::prefix('debit-card-transactions')->as('debit-card-transactions.')->group(function () {
+            Route::get('', [DebitCardTransactionController::class, 'index'])->name('index');
+            Route::post('', [DebitCardTransactionController::class, 'store'])->name('store');
+            Route::get('{debitCardTransaction}', [DebitCardTransactionController::class, 'show'])->name('show');
+        });
     });

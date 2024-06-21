@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Providers;
 
 use App\Models\DebitCard;
 use App\Models\DebitCardTransaction;
-use App\Polocies\DebitCardPolicy;
-use App\Polocies\DebitCardTransactionPolicy;
+use App\Policies\DebitCardPolicy;
+use App\Policies\DebitCardTransactionPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Laravel\Passport\Passport;
 

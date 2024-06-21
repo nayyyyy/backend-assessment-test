@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Http\Requests\DebitCardCreateRequest;
@@ -9,6 +11,7 @@ use App\Http\Requests\DebitCardUpdateRequest;
 use App\Http\Resources\DebitCardResource;
 use App\Models\DebitCard;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller as BaseController;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
@@ -39,7 +42,7 @@ class DebitCardController extends BaseController
      *
      * @return JsonResponse
      */
-    public function store(DebitCardCreateRequest $request)
+    public function store(DebitCardCreateRequest $request): JsonResponse
     {
         $debitCard = $request->user()->debitCards()->create([
             'type' => $request->input('type'),
@@ -58,7 +61,7 @@ class DebitCardController extends BaseController
      *
      * @return JsonResponse
      */
-    public function show(DebitCardShowRequest $request, DebitCard $debitCard)
+    public function show(DebitCardShowRequest $request, DebitCard $debitCard): JsonResponse
     {
         return response()->json(new DebitCardResource($debitCard), HttpResponse::HTTP_OK);
     }
@@ -71,7 +74,7 @@ class DebitCardController extends BaseController
      *
      * @return JsonResponse
      */
-    public function update(DebitCardUpdateRequest $request, DebitCard $debitCard)
+    public function update(DebitCardUpdateRequest $request, DebitCard $debitCard): JsonResponse
     {
         $debitCard->update([
             'disabled_at' => $request->input('is_active') ? null : Carbon::now(),
@@ -87,9 +90,9 @@ class DebitCardController extends BaseController
      * @param DebitCard               $debitCard
      *
      * @return JsonResponse
-     * @throws \Exception
+     * @throws Exception
      */
-    public function destroy(DebitCardDestroyRequest $request, DebitCard $debitCard)
+    public function destroy(DebitCardDestroyRequest $request, DebitCard $debitCard): JsonResponse
     {
         $debitCard->delete();
 
